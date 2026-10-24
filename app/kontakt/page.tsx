@@ -7,7 +7,7 @@ import { ContactForm } from "./ContactForm";
 
 export const metadata: Metadata = {
   title: "Kontakt",
-  description: "Ring, skriv eller book et møde på værkstedet i Brønshøj eller online.",
+  description: "Ring, skriv eller book et møde på værkstedet eller online.",
 };
 
 function Punkt({ navn, children }: { navn: string; children: ReactNode }) {
@@ -43,9 +43,9 @@ export default async function Kontakt({ searchParams }: { searchParams: Promise<
           </Punkt>
           <Punkt navn="Værksted">
             <span>
-              Fuglebakkevej, Brønshøj
+              Efter aftale
               <br />
-              København · efter aftale
+              på værkstedet eller online
             </span>
           </Punkt>
           <Punkt navn="Følg med">

@@ -6,14 +6,14 @@ import { smykker, typer, type Type } from "@/lib/smykker";
 
 export const metadata: Metadata = {
   title: "Smykker til salg",
-  description: "Færdige unikke ringe og øreringe til salg fra Ossip Frolovs guldsmedeværksted i Brønshøj.",
+  description: "Færdige unikke ringe og øreringe til salg fra Ossip Frolovs guldsmedeværksted.",
 };
 
 const koeb = [
   { titel: "Spørg om smykket", tekst: "Ring, skriv en e-mail eller send en besked fra smykkets side." },
   {
     titel: "Se og prøv det",
-    tekst: "Kom forbi værkstedet i Brønshøj efter aftale, så kan du se, mærke og prøve smykket.",
+    tekst: "Kom forbi værkstedet efter aftale, så kan du se, mærke og prøve smykket.",
   },
   {
     titel: "Betal som det passer dig",

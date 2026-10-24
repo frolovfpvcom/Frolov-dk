@@ -1,7 +1,7 @@
 export const faq = [
   {
-    spoergsmaal: "Hvor finder jeg dig?",
-    svar: "Værkstedet ligger på Fuglebakkevej i Brønshøj i København. Ring på 28 11 17 41 og lav en aftale.",
+    spoergsmaal: "Hvordan kommer jeg forbi?",
+    svar: "Vi mødes efter aftale, på værkstedet eller online. Ring på 28 11 17 41, så finder vi en tid, der passer dig.",
   },
   {
     spoergsmaal: "Hvad koster smykkerne?",

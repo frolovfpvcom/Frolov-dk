@@ -43,7 +43,7 @@ export const indlaeg: Indlaeg[] = [
     billede: "3b4bab_9fc055b8b5b44e77847f1d7717436209~mv2.jpg",
     afsnit: [
       "Disse tre nye ringe afspejler min kærlighed til at være ude i naturen. Det er så helende at være ude og med alle sanser opfatte alt det liv der er omkring én, mens verden får lov at rulle afsted derude et sted. At indånde alle de dufte der er, høre vandets bevægelse, raslen af blade og græs, se de mindste detaljer, mærke luftens bevægelse på huden og blive glad ved mødet med det hele, her, nu.",
-      "Ringene kan ses, mærkes og prøves på værkstedet på Fuglebakkevej i Brønshøj.",
+      "Ringene kan ses, mærkes og prøves på værkstedet efter aftale.",
     ],
     billeder: [
       "3b4bab_c6742a9b32db454abba9d95fa325c636~mv2.jpg",
