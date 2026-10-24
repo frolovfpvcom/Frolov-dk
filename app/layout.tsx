@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     template: "%s · Ossip Frolov",
   },
   description:
-    "Unikke smykker på bestilling fra guldsmed Ossip Frolovs værksted i Brønshøj. Over 25 års erfaring med vielsesringe, ringe, øreringe og vedhæng i guld og sølv.",
+    "Unikke smykker på bestilling fra guldsmed Ossip Frolovs værksted. Over 25 års erfaring med vielsesringe, ringe, øreringe og vedhæng i guld og sølv.",
 };
 
 export const viewport: Viewport = {
@@ -39,13 +39,6 @@ const jsonLd = {
   image: wix("3b4bab_84e18caf6adf4b5797dc9ace606ffabb~mv2.jpg", 1200),
   telephone: site.telefonIntl,
   email: site.email,
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: "Fuglebakkevej",
-    addressLocality: "Brønshøj",
-    addressRegion: "København",
-    addressCountry: "DK",
-  },
   paymentAccepted: "MobilePay, kort, kontant, bankoverførsel",
   sameAs: [site.instagram, site.facebook],
 };

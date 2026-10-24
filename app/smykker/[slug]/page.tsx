@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const img = await billede(`smykke.${s.slug}.billede.1`, s.billeder[0].id, 1200);
   return {
     title: titel,
-    description: `${beskrivelse} Unikt smykke fra Ossip Frolovs værksted i Brønshøj.`,
+    description: `${beskrivelse} Unikt smykke fra Ossip Frolovs værksted.`,
     openGraph: { title: titel, description: beskrivelse, images: [img] },
     twitter: { card: "summary_large_image", title: titel, description: beskrivelse, images: [img] },
   };

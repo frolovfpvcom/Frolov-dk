@@ -21,7 +21,7 @@ export default async function Forside() {
       <section className="mx-auto grid max-w-6xl items-center gap-10 px-5 pt-12 pb-16 sm:px-8 md:grid-cols-[1.1fr_1fr] md:pt-20">
         <div>
           <T id="forside.lille-overskrift" as="p" className="block text-xs uppercase tracking-[0.3em] text-gold">
-            Guldsmed i Brønshøj
+            Guldsmed · Smykker på bestilling
           </T>
           <T id="forside.overskrift" as="h1" className="mt-5 block font-display text-5xl leading-[1.02] sm:text-7xl">
             Smykker der *husker* for dig

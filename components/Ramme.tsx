@@ -85,7 +85,6 @@ export async function Footer() {
         </div>
         <div className="space-y-1 text-sm">
           <p className="mb-3 text-xs uppercase tracking-[0.25em] text-gold-soft">Værkstedet</p>
-          <p>Fuglebakkevej, Brønshøj</p>
           <p>Besøg efter aftale, også online</p>
           <p>
             <a href={site.telefonLink} className="hover:text-gold-soft">

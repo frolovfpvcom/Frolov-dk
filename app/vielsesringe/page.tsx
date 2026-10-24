@@ -9,7 +9,7 @@ import { kontaktLink } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Vielsesringe",
   description:
-    "Vielsesringe lavet i hånden sammen med jer på værkstedet i Brønshøj. Jeres eget guld kan smeltes om og bruges i ringene.",
+    "Vielsesringe lavet i hånden sammen med jer på værkstedet. Jeres eget guld kan smeltes om og bruges i ringene.",
 };
 
 export default function Vielsesringe() {

@@ -7,7 +7,7 @@ import { workshops } from "@/lib/workshops";
 
 export const metadata: Metadata = {
   title: "Workshops",
-  description: "Smykkeworkshop for to og meditation med te søndag formiddag på Ossip Frolovs værksted i Brønshøj.",
+  description: "Smykkeworkshop for to og meditation med te søndag formiddag på Ossip Frolovs værksted.",
 };
 
 export default function Workshops() {
