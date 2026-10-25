@@ -15,10 +15,12 @@ npm run dev
 ## Ossip retter selv i siden
 
 Ossip logger ind på `/rediger` og dobbeltklikker på tekster og billeder for at rette dem.
-Rettelserne gemmes i Vercel Blob. For at det virker, skal Vercel-projektet have:
+Rettelserne gemmes i en privat Vercel Blob-store. For at det virker, skal Vercel-projektet have:
 
-- en Blob-store forbundet til projektet (giver `BLOB_READ_WRITE_TOKEN`)
+- en Blob-store forbundet til projektet (giver `BLOB_STORE_ID`; SDK'en logger ind med projektets OIDC-token)
 - miljøvariablen `REDIGER_ADGANGSKODE` med Ossips adgangskode
+
+Uploadede billeder er private i Blob og vises gennem `/billeder/...`.
 
 Uden de to virker siden som normalt, men rettelser kan ikke gemmes.
 

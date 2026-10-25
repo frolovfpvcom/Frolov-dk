@@ -27,6 +27,10 @@ export const metadata: Metadata = {
     "Unikke smykker på bestilling fra guldsmed Ossip Frolovs værksted. Over 25 års erfaring med vielsesringe, ringe, øreringe og vedhæng i guld og sølv.",
 };
 
+// Siderne er statiske og bygges om, når Ossip gemmer. Bygges de én gang i timen også,
+// kommer hans rettelser med, selv hvis et nyt deploy ikke kunne læse dem.
+export const revalidate = 3600;
+
 export const viewport: Viewport = {
   themeColor: "#eef0ee",
 };
