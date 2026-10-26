@@ -4,7 +4,7 @@ import { Billede, T } from "./Tekst";
 import { aftale } from "@/lib/fakta";
 import { hentIndhold } from "@/lib/indhold";
 import { ElementKnapper } from "./Redigering";
-import { billedSrc, type VistSmykke } from "@/lib/lister";
+import { billedSrc, flytbar, type VistSmykke } from "@/lib/lister";
 import { erSolgt } from "@/lib/smykker";
 
 export const knapMoerk = "bg-ink px-6 py-3 text-[0.95rem] tracking-wide text-pearl hover:bg-tourmaline";
@@ -83,7 +83,7 @@ export async function SmykkeKort({
   const solgt = erSolgt(tekst[`smykke.${s.slug}.pris`] ?? s.pris);
   const [forrest, hover] = s.billeder;
   return (
-    <article className="group relative">
+    <article className="group relative" {...(flyt ? flytbar("smykker", s.slug) : {})}>
       <Link href={`/smykker/${s.slug}`} className="block">
         <div className="relative aspect-square overflow-hidden bg-pearl-deep">
           {forrest ? (

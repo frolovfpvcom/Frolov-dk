@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { Aftale, knapLys, knapMoerk, Priser, SmykkeKort, trin } from "@/components/Dele";
+import { Fri } from "@/components/Blokke";
 import { Billede, T } from "@/components/Tekst";
 import { hentIndhold } from "@/lib/indhold";
 import { udvalgte as faste } from "@/lib/galleri";
-import { billedSrc, hentListe, hentSmykker } from "@/lib/lister";
+import { billedSrc, flytbar, hentListe, hentSmykker, skiftbart, slipBilleder } from "@/lib/lister";
 import { bestillingBillede, kunstnerAfsnit, kunstnerOverskrift, portraet } from "@/lib/kunstneren";
 import { site } from "@/lib/site";
 import { wix } from "@/lib/wix";
@@ -66,6 +67,8 @@ export default async function Forside() {
         </div>
       </section>
 
+      <Fri sted="forside-top" />
+
       <section aria-label="Udvalgte smykker" className="overflow-x-auto py-6">
         <ul className="flex w-max gap-3 px-5 sm:px-8">
           {udvalgte.slice(0, 10).map((b) => (
@@ -73,6 +76,7 @@ export default async function Forside() {
               <Link href="/galleri" aria-label="Se flere smykker i galleriet">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
+                  {...skiftbart("galleri.udvalgte", b)}
                   src={billedSrc(b, 500)}
                   alt=""
                   loading="lazy"
@@ -251,12 +255,17 @@ export default async function Forside() {
             Læs historier fra værkstedet
           </Link>
         </div>
-        <ul className="mt-8 grid grid-cols-2 gap-5 sm:grid-cols-3">
+        <ul className="mt-8 grid grid-cols-2 gap-5 sm:grid-cols-3" {...slipBilleder("forside.instagram")}>
           {instagram.map((b, i) => (
-            <li key={b.id} className="relative aspect-square overflow-hidden bg-pearl-deep">
+            <li
+              key={b.id}
+              className="relative aspect-square overflow-hidden bg-pearl-deep"
+              {...flytbar("forside.instagram", b.id)}
+            >
               <a href={site.instagram} aria-label="Se værkstedet på Instagram">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
+                  {...skiftbart("forside.instagram", b)}
                   src={billedSrc(b, 600)}
                   alt=""
                   loading="lazy"
@@ -297,6 +306,7 @@ export default async function Forside() {
           </Link>
         </div>
       </section>
+      <Fri sted="forside-bund" className="mx-auto max-w-6xl px-5 pt-16 sm:px-8" />
     </>
   );
 }

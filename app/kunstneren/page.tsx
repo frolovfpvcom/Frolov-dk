@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { SideTop } from "@/components/Dele";
 import { Billede, T } from "@/components/Tekst";
 import { bestillingBillede, kunstnerAfsnit, kunstnerOverskrift, portraet } from "@/lib/kunstneren";
+import { Fri } from "@/components/Blokke";
 
 export const metadata: Metadata = {
   title: "Kunstneren",
@@ -13,6 +14,7 @@ export default function Kunstneren() {
   return (
     <>
       <SideTop lille="Kunstneren" titel={<T id="kunstneren.overskrift">{kunstnerOverskrift}</T>} />
+      <Fri sted="kunstneren-top" />
       <div className="mx-auto grid max-w-6xl gap-12 px-5 sm:px-8 md:grid-cols-[1fr_1.3fr]">
         <div className="space-y-4">
           <Billede
@@ -44,6 +46,7 @@ export default function Kunstneren() {
           <p className="font-display text-2xl italic text-gold">Ossip</p>
         </div>
       </div>
+      <Fri sted="kunstneren-bund" className="mx-auto max-w-6xl px-5 pt-16 sm:px-8" />
     </>
   );
 }

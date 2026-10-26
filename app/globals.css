@@ -87,3 +87,39 @@ html[data-editing] [data-edit-img][data-edit-open] {
   outline: 2px solid var(--color-gold);
   outline-offset: -2px;
 }
+
+/* Træk og slip (se components/Traek.tsx) */
+html[data-editing] [data-element] {
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+html[data-editing] [data-element][data-traekkes] {
+  position: relative;
+  z-index: 40;
+  opacity: 0.75;
+  pointer-events: none;
+  cursor: grabbing;
+  box-shadow: 0 12px 30px rgb(0 0 0 / 0.25);
+}
+
+html[data-editing] [data-drop="venstre"] {
+  box-shadow: -6px 0 0 0 var(--color-gold);
+}
+html[data-editing] [data-drop="hoejre"] {
+  box-shadow: 6px 0 0 0 var(--color-gold);
+}
+html[data-editing] [data-drop="over"] {
+  box-shadow: 0 -6px 0 0 var(--color-gold);
+}
+html[data-editing] [data-drop="under"] {
+  box-shadow: 0 6px 0 0 var(--color-gold);
+}
+
+html[data-editing] [data-slip-over] {
+  outline: 2px dashed var(--color-gold);
+  outline-offset: 6px;
+  background-color: rgb(156 122 44 / 0.08);
+}

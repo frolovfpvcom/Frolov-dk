@@ -174,7 +174,16 @@ export async function retMenupunkt(href: string, felter: { titel?: string; skjul
   });
 }
 
-const BILLEDLISTE = /^(galleri\.udvalgte|galleri\.[a-z0-9-]+\.billeder|forside\.instagram|smykke\.[a-z0-9-]+\.billeder|side\.[a-z0-9-]+\.blokke)$/;
+export async function flytTil(navn: string, id: string, maalId: string, efter: boolean): Promise<Svar> {
+  return aendreListe(navn, (liste) => {
+    const [e] = liste.splice(find(liste, id), 1);
+    const j = find(liste, maalId);
+    liste.splice(efter ? j + 1 : j, 0, e);
+  });
+}
+
+const BILLEDLISTE = /^(galleri\.udvalgte|galleri\.[a-z0-9-]+\.billeder|forside\.instagram|smykke\.[a-z0-9-]+\.billeder|side\.[a-z0-9-]+\.blokke|fri\.[a-z0-9-]+)$/;
+const BLOKLISTE = /^(side\.[a-z0-9-]+\.blokke|fri\.[a-z0-9-]+)$/;
 
 // Ét billede ad gangen, så hvert upload holder sig under grænsen for en server action.
 export async function tilfoejBillede(navn: string, form: FormData): Promise<Svar> {
@@ -194,13 +203,14 @@ export async function tilfoejBillede(navn: string, form: FormData): Promise<Svar
     return lagerFejl("Kunne ikke uploade billedet. Prøv igen.", e);
   }
   return aendreListe(navn, (liste) => {
-    liste.push(navn.startsWith("side.") ? { id, src, slags: "billede" } : { id, src });
+    liste.push(BLOKLISTE.test(navn) ? { id, src, slags: "billede" } : { id, src });
   });
 }
 
-export async function tilfoejBlok(slug: string, slags: string): Promise<Svar> {
+export async function tilfoejBlok(navn: string, slags: string): Promise<Svar> {
   if (slags !== "tekst" && slags !== "overskrift") return { ok: false, error: "Ukendt slags." };
-  return aendreListe(`side.${slug}.blokke`, (liste) => {
+  if (!BLOKLISTE.test(navn)) return { ok: false, error: "Her kan der ikke tilføjes tekst." };
+  return aendreListe(navn, (liste) => {
     liste.push({ id: nytId(), slags });
   });
 }
@@ -234,4 +244,32 @@ export async function nytSmykke(titel: string, type: string): Promise<SvarMed<{ 
     i.tekst[`smykke.${slug}.titel`] = navn;
   });
   return svar.ok ? { ok: true, href: `/smykker/${slug}` } : svar;
+}
+
+// Dobbeltklik på et billede i en liste: skift det ud, men behold dets plads.
+export async function erstatBillede(navn: string, id: string, form: FormData): Promise<Svar> {
+  const fejl = await tjek();
+  if (fejl) return fejl;
+  if (!BILLEDLISTE.test(navn)) return { ok: false, error: "Billedet kan ikke skiftes her." };
+  const fil = form.get("billede");
+  if (!(fil instanceof File) || !fil.type.startsWith("image/")) {
+    return { ok: false, error: "Vælg et billede." };
+  }
+  if (fil.size > MAX_BILLEDE) return { ok: false, error: "Billedet er for stort." };
+  let src: string;
+  try {
+    src = await gemBillede(`${navn}.${id}`, fil);
+  } catch (e) {
+    return lagerFejl("Kunne ikke uploade billedet. Prøv igen.", e);
+  }
+  return aendreListe(navn, (liste) => {
+    liste[find(liste, id)].src = src;
+  });
+}
+
+export async function gendanBillede(navn: string, id: string): Promise<Svar> {
+  return aendreListe(navn, (liste) => {
+    const e = liste[find(liste, id)];
+    if (e.wix) delete e.src;
+  });
 }

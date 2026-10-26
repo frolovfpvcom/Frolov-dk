@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { formaterDato, indlaeg } from "@/lib/blog";
 import { wix } from "@/lib/wix";
+import { Fri } from "@/components/Blokke";
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -33,6 +34,7 @@ export default function Blog() {
           </Link>
         ))}
       </div>
+      <Fri sted="blog-bund" className="mx-auto max-w-6xl px-5 pt-16 sm:px-8" />
     </>
   );
 }

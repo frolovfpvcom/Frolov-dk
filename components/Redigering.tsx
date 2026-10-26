@@ -76,14 +76,29 @@ export function ElementKnapper({
   );
 }
 
-// Vælg et eller flere billeder fra computeren eller telefonen. De uploades ét ad gangen.
+// Uploader billeder ét ad gangen til en liste. Bruges af knappen herunder og når Ossip
+// trækker billeder ind fra computeren (se components/Traek.tsx).
+export async function uploadBilleder(liste: string, filer: File[], status: (tekst: string) => void) {
+  const billeder = filer.filter((f) => f.type.startsWith("image/"));
+  if (!billeder.length) return status("Det er ikke et billede.");
+  for (const [n, fil] of billeder.entries()) {
+    status(billeder.length > 1 ? `Uploader ${n + 1} af ${billeder.length}…` : "Uploader…");
+    const form = new FormData();
+    form.set("billede", await formindsk(fil));
+    const svar = await tilfoejBillede(liste, form);
+    if (!svar.ok) return status(svar.error);
+  }
+  status(billeder.length > 1 ? `${billeder.length} billeder er tilføjet.` : "Billedet er tilføjet.");
+}
+
+// Vælg et eller flere billeder fra computeren eller telefonen, eller træk dem hertil.
 export function TilfoejBilleder({ liste, tekst = "Tilføj billeder" }: { liste: string; tekst?: string }) {
   const ref = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [venter, start] = useTransition();
 
   return (
-    <div data-only-editing="" className="flex flex-wrap items-center gap-3">
+    <div data-only-editing="" data-slip-billeder={liste} className="flex flex-wrap items-center gap-3">
       <input
         ref={ref}
         type="file"
@@ -94,19 +109,7 @@ export function TilfoejBilleder({ liste, tekst = "Tilføj billeder" }: { liste: 
           const filer = Array.from(e.target.files ?? []);
           e.target.value = "";
           if (!filer.length) return;
-          start(async () => {
-            for (const [n, fil] of filer.entries()) {
-              setStatus(filer.length > 1 ? `Uploader ${n + 1} af ${filer.length}…` : "Uploader…");
-              const form = new FormData();
-              form.set("billede", await formindsk(fil));
-              const svar = await tilfoejBillede(liste, form);
-              if (!svar.ok) {
-                setStatus(svar.error);
-                return;
-              }
-            }
-            setStatus(filer.length > 1 ? `${filer.length} billeder er tilføjet.` : "Billedet er tilføjet.");
-          });
+          start(() => uploadBilleder(liste, filer, setStatus));
         }}
       />
       <button type="button" onClick={() => ref.current?.click()} disabled={venter} className={tilfoejKnap}>
