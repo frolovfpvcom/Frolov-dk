@@ -123,3 +123,12 @@ html[data-editing] [data-slip-over] {
   outline-offset: 6px;
   background-color: rgb(156 122 44 / 0.08);
 }
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
