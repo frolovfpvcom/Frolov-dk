@@ -14,14 +14,26 @@ const tomt: Indhold = { tekst: {}, billeder: {} };
 
 export const harBlob = () => Boolean(process.env.BLOB_STORE_ID || process.env.BLOB_READ_WRITE_TOKEN);
 
-async function laesFraBlob(): Promise<Indhold> {
+// Er der sat en read-write token, bruges den frem for OIDC, så den kan redde os,
+// hvis OIDC-forbindelsen til lageret driller.
+export const blobAdgang = () =>
+  process.env.BLOB_READ_WRITE_TOKEN ? { token: process.env.BLOB_READ_WRITE_TOKEN } : {};
+
+// Kaster ved fejl, så en gemning aldrig overskriver rettelserne med et tomt indhold.
+async function laesStrengt(): Promise<Indhold> {
   if (!harBlob()) return tomt;
+  const res = await get(FIL, { access: "private", useCache: false, ...blobAdgang() });
+  if (!res) return tomt;
+  if (res.statusCode !== 200) throw new Error(`Blob svarede ${res.statusCode}`);
+  const data = (await new Response(res.stream).json()) as Partial<Indhold>;
+  return { tekst: data.tekst ?? {}, billeder: data.billeder ?? {} };
+}
+
+async function laesFraBlob(): Promise<Indhold> {
   try {
-    const res = await get(FIL, { access: "private", useCache: false });
-    if (!res || res.statusCode !== 200) return tomt;
-    const data = (await new Response(res.stream).json()) as Partial<Indhold>;
-    return { tekst: data.tekst ?? {}, billeder: data.billeder ?? {} };
-  } catch {
+    return await laesStrengt();
+  } catch (e) {
+    console.error("Kunne ikke læse indhold fra Blob:", e);
     return tomt;
   }
 }
@@ -31,10 +43,11 @@ export const hentIndhold = unstable_cache(laesFraBlob, ["indhold"], {
 });
 
 export async function gemIndhold(aendring: (i: Indhold) => void) {
-  const indhold = structuredClone(await laesFraBlob());
+  const indhold = structuredClone(await laesStrengt());
   aendring(indhold);
   await put(FIL, JSON.stringify(indhold), {
     access: "private",
+    ...blobAdgang(),
     contentType: "application/json",
     addRandomSuffix: false,
     allowOverwrite: true,
@@ -46,6 +59,7 @@ export async function gemBillede(id: string, fil: File) {
   const endelse = fil.name.match(/\.\w+$/)?.[0] ?? ".jpg";
   const blob = await put(`billeder/${id}${endelse}`, fil, {
     access: "private",
+    ...blobAdgang(),
     contentType: fil.type || undefined,
     addRandomSuffix: true,
   });
