@@ -30,6 +30,13 @@ async function tjek(): Promise<Svar | null> {
   return null;
 }
 
+// Viser den egentlige fejl fra lageret, så vi kan se hvad der går galt.
+function lagerFejl(tekst: string, e: unknown): Svar {
+  console.error(tekst, e);
+  const detalje = e instanceof Error ? e.message : String(e);
+  return { ok: false, error: `${tekst} (${detalje})` };
+}
+
 function opdater() {
   updateTag("indhold");
   revalidatePath("/", "layout");
@@ -42,8 +49,8 @@ export async function saveText(id: string, vaerdi: string): Promise<Svar> {
     await gemIndhold((i) => {
       i.tekst[id] = vaerdi.trim();
     });
-  } catch {
-    return { ok: false, error: "Kunne ikke gemme. Prøv igen." };
+  } catch (e) {
+    return lagerFejl("Kunne ikke gemme. Prøv igen.", e);
   }
   opdater();
   return { ok: true };
@@ -57,8 +64,8 @@ export async function resetField(id: string): Promise<Svar> {
       delete i.tekst[id];
       delete i.billeder[id];
     });
-  } catch {
-    return { ok: false, error: "Kunne ikke gendanne. Prøv igen." };
+  } catch (e) {
+    return lagerFejl("Kunne ikke gendanne. Prøv igen.", e);
   }
   opdater();
   return { ok: true };
@@ -77,8 +84,8 @@ export async function saveImage(id: string, form: FormData): Promise<Svar> {
     await gemIndhold((i) => {
       i.billeder[id] = url;
     });
-  } catch {
-    return { ok: false, error: "Kunne ikke uploade billedet. Prøv igen." };
+  } catch (e) {
+    return lagerFejl("Kunne ikke uploade billedet. Prøv igen.", e);
   }
   opdater();
   return { ok: true };
