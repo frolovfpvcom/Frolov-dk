@@ -1,5 +1,5 @@
 import "server-only";
-import { get, put } from "@vercel/blob";
+import { BlobNotFoundError, get, head, put } from "@vercel/blob";
 import { unstable_cache } from "next/cache";
 
 // Ossips rettelser fra /rediger ligger som én JSON-fil i en privat Vercel Blob-store.
@@ -31,10 +31,27 @@ export const harBlob = () => Boolean(process.env.BLOB_STORE_ID || process.env.BL
 export const blobAdgang = () =>
   process.env.BLOB_READ_WRITE_TOKEN ? { token: process.env.BLOB_READ_WRITE_TOKEN } : {};
 
+async function findesIkke() {
+  try {
+    await head(FIL, blobAdgang());
+    return false;
+  } catch (e) {
+    return e instanceof BlobNotFoundError;
+  }
+}
+
 // Kaster ved fejl, så en gemning aldrig overskriver rettelserne med et tomt indhold.
 async function laesStrengt(): Promise<Indhold> {
   if (!harBlob()) return tomt;
-  const res = await get(FIL, { access: "private", useCache: false, ...blobAdgang() });
+  let res;
+  try {
+    res = await get(FIL, { access: "private", useCache: false, ...blobAdgang() });
+  } catch (e) {
+    // Et privat lager svarer 403 i stedet for 404, når filen ikke findes endnu.
+    // Spørg API'et, om filen findes; gør den ikke, er der bare ingen rettelser.
+    if (await findesIkke()) return tomt;
+    throw e;
+  }
   if (!res) return tomt;
   if (res.statusCode !== 200) throw new Error(`Blob svarede ${res.statusCode}`);
   const data = (await new Response(res.stream).json()) as Partial<Indhold>;
