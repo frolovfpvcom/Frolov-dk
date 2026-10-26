@@ -22,14 +22,14 @@ export default function Kunstneren() {
             wixId={portraet}
             str={900}
             alt="Ossip Frolov på værkstedet"
-            className="w-full bg-pearl-deep object-cover"
+            className="aspect-square w-full bg-pearl-deep object-cover"
           />
           <Billede
             id="kunstneren.billede.2"
             wixId={bestillingBillede}
             str={900}
             alt="Smykker på bestilling"
-            className="w-full bg-pearl-deep object-cover"
+            className="aspect-[4/5] w-full bg-pearl-deep object-cover"
           />
         </div>
         <div className="max-w-[65ch] space-y-5 text-lg leading-relaxed">
