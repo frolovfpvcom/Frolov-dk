@@ -2,33 +2,39 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Aftale, knapLys, knapMoerk, SmykkeKort, tekstLink } from "@/components/Dele";
+import { ElementKnapper, TilfoejBilleder } from "@/components/Redigering";
 import { Billede, billede, T, tekst } from "@/components/Tekst";
 import { fakta } from "@/lib/fakta";
+import { andreSmykker, billedSrc, findSmykke, hentSmykker } from "@/lib/lister";
 import { kontaktLink, site } from "@/lib/site";
-import { andreSmykker, erSolgt, findSmykke, prisTal, smykker, typer } from "@/lib/smykker";
+import { erSolgt, prisTal, smykker, typer } from "@/lib/smykker";
 
 type Props = { params: Promise<{ slug: string }> };
 
+// Smykker Ossip selv tilføjer, bygges første gang nogen besøger dem.
 export function generateStaticParams() {
   return smykker.map((s) => ({ slug: s.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const s = findSmykke((await params).slug);
+  const s = await findSmykke((await params).slug);
   if (!s) return {};
   const titel = await tekst(`smykke.${s.slug}.titel`, s.titel);
   const beskrivelse = await tekst(`smykke.${s.slug}.beskrivelse`, s.beskrivelse);
-  const img = await billede(`smykke.${s.slug}.billede.1`, s.billeder[0].id, 1200);
+  const forrest = s.billeder[0];
+  const img = forrest ? await billede(`smykke.${s.slug}.billede.${forrest.id}`, billedSrc(forrest, 1200)) : undefined;
   return {
     title: titel,
     description: `${beskrivelse} Unikt smykke fra Ossip Frolovs værksted.`,
-    openGraph: { title: titel, description: beskrivelse, images: [img] },
-    twitter: { card: "summary_large_image", title: titel, description: beskrivelse, images: [img] },
+    openGraph: { title: titel, description: beskrivelse, images: img ? [img] : undefined },
+    twitter: { card: "summary_large_image", title: titel, description: beskrivelse, images: img ? [img] : undefined },
   };
 }
 
 export default async function SmykkeSide({ params }: Props) {
-  const s = findSmykke((await params).slug);
+  const { slug } = await params;
+  const alle = await hentSmykker();
+  const s = alle.find((a) => a.slug === slug);
   if (!s) notFound();
   const k = `smykke.${s.slug}`;
   const titel = await tekst(`${k}.titel`, s.titel);
@@ -41,7 +47,7 @@ export default async function SmykkeSide({ params }: Props) {
     "@type": "Product",
     name: titel,
     description: await tekst(`${k}.beskrivelse`, s.beskrivelse),
-    image: await billede(`${k}.billede.1`, s.billeder[0].id, 1200),
+    image: s.billeder[0] ? await billede(`${k}.billede.${s.billeder[0].id}`, billedSrc(s.billeder[0], 1200)) : undefined,
     brand: { "@type": "Brand", name: site.navn },
     material: await tekst(`${k}.materiale`, s.materiale),
     offers: {
@@ -68,20 +74,36 @@ export default async function SmykkeSide({ params }: Props) {
       </nav>
 
       <article className="mx-auto mt-8 grid max-w-6xl gap-10 px-5 sm:px-8 md:grid-cols-[1.2fr_1fr] md:gap-14">
-        <div className="grid grid-cols-2 gap-3">
-          {s.billeder.map((b, i) => (
-            <Billede
-              key={b.id}
-              id={`${k}.billede.${i + 1}`}
-              wixId={b.id}
-              str={i === 0 ? 1400 : 800}
-              alt={b.alt}
-              lazy={i > 0}
-              className={`${i === 0 ? "col-span-2 " : ""}aspect-square w-full bg-pearl-deep object-cover${
-                i > 0 && i === s.billeder.length - 1 && i % 2 ? " col-span-2" : ""
-              }`}
-            />
-          ))}
+        <div>
+          <div className="grid grid-cols-2 gap-3">
+            {s.billeder.map((b, i) => (
+              <div
+                key={b.id}
+                className={`relative${i === 0 ? " col-span-2" : ""}${
+                  i > 0 && i === s.billeder.length - 1 && i % 2 ? " col-span-2" : ""
+                }`}
+              >
+                <Billede
+                  id={`${k}.billede.${b.id}`}
+                  src={billedSrc(b, i === 0 ? 1400 : 800)}
+                  str={i === 0 ? 1400 : 800}
+                  alt={b.titel ?? titel}
+                  lazy={i > 0}
+                  className="aspect-square w-full bg-pearl-deep object-cover"
+                />
+                <ElementKnapper
+                  liste={`${k}.billeder`}
+                  id={b.id}
+                  foerste={i === 0}
+                  sidste={i === s.billeder.length - 1}
+                  hvad="billedet"
+                />
+              </div>
+            ))}
+          </div>
+          <div className="mt-4">
+            <TilfoejBilleder liste={`${k}.billeder`} />
+          </div>
         </div>
         <div className="md:sticky md:top-28 md:self-start">
           <p className="text-xs uppercase tracking-[0.3em] text-gold">{solgt ? "Solgt" : "Unikt smykke"}</p>
@@ -92,6 +114,7 @@ export default async function SmykkeSide({ params }: Props) {
             id={`${k}.pris`}
             as="p"
             className={`mt-5 block font-display text-3xl tabular-nums ${solgt ? "text-ash" : "text-gold"}`}
+            placeholder="Tilføj pris (eller skriv Solgt)"
           >
             {s.pris}
           </T>
@@ -103,7 +126,12 @@ export default async function SmykkeSide({ params }: Props) {
           >
             {s.materiale}
           </T>
-          <T id={`${k}.beskrivelse`} as="p" className="mt-5 block text-lg leading-relaxed text-ash">
+          <T
+            id={`${k}.beskrivelse`}
+            as="p"
+            className="mt-5 block text-lg leading-relaxed text-ash"
+            placeholder="Tilføj en kort beskrivelse"
+          >
             {s.beskrivelse}
           </T>
           <T
@@ -150,11 +178,11 @@ export default async function SmykkeSide({ params }: Props) {
         <div className="flex flex-wrap items-end justify-between gap-4">
           <h2 className="font-display text-3xl">Andre smykker</h2>
           <Link href="/smykker" className="text-sm underline underline-offset-4 hover:text-tourmaline">
-            Se alle {smykker.length}
+            Se alle {alle.length}
           </Link>
         </div>
         <div className="mt-8 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
-          {andreSmykker(s.slug).map((a) => (
+          {andreSmykker(alle, s.slug).map((a) => (
             <SmykkeKort key={a.slug} smykke={a} />
           ))}
         </div>

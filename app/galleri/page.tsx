@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { nySerie } from "@/app/rediger/actions";
 import { SideTop, tekstLink } from "@/components/Dele";
-import { byen, sommerfugle, udvalgte } from "@/lib/galleri";
-import { wix } from "@/lib/wix";
+import { ElementKnapper, HandlingsKnap, TilfoejBilleder } from "@/components/Redigering";
+import { T, tekst } from "@/components/Tekst";
+import { serier as faste } from "@/lib/galleri";
+import { billedSrc, hentListe } from "@/lib/lister";
 
 export const metadata: Metadata = {
   title: "Gallerier",
@@ -10,19 +13,25 @@ export const metadata: Metadata = {
     "Smykker Ossip Frolov har lavet på bestilling: vielsesringe, øreringe, vedhæng, brocher, skulptur og herresmykker.",
 };
 
-const serier = [
-  { id: "sommerfugle", titel: "Sommerfugle", tekst: "Sommerfugle af 14K guld med ferskvandsperler.", billeder: sommerfugle },
-  {
-    id: "byen",
-    titel: "Byen",
-    tekst: "København med sin smukke arkitektur har været en stor inspiration: tårne, tage og den gamle by i sølv og guld.",
-    billeder: byen,
-  },
-];
+const spring =
+  "block border border-ink/15 px-4 py-2 text-sm transition-colors hover:border-ink hover:bg-ink hover:text-pearl";
 
-const spring = "block border border-ink/15 px-4 py-2 text-sm transition-colors hover:border-ink hover:bg-ink hover:text-pearl";
+export default async function Galleri() {
+  const udvalgte = await hentListe("galleri.udvalgte");
+  const serier = await Promise.all(
+    (await hentListe("galleri.serier")).map(async (e, i, alle) => {
+      const fast = faste.find((f) => f.id === e.id);
+      return {
+        id: e.id,
+        titel: await tekst(`galleri.${e.id}.titel`, fast?.titel ?? e.titel ?? "Ny serie"),
+        tekst: fast?.tekst ?? "",
+        billeder: await hentListe(`galleri.${e.id}.billeder`),
+        foerste: i === 0,
+        sidste: i === alle.length - 1,
+      };
+    }),
+  );
 
-export default function Galleri() {
   return (
     <>
       <SideTop lille="Gallerier" titel="Smykker lavet på bestilling">
@@ -65,40 +74,92 @@ export default function Galleri() {
           </p>
           <p className="leading-relaxed text-ash">
             <strong className="font-display text-lg text-ink">For mænd.</strong> Smykker tænkt som herresmykker. Kære
-            damer, I er også velkomne til at blive inspireret, da det er op til enhver af os, hvad vi kan lide og
-            ønsker at pynte os med!
+            damer, I er også velkomne til at blive inspireret, da det er op til enhver af os, hvad vi kan lide og ønsker
+            at pynte os med!
           </p>
         </div>
 
         <section id="udvalgte-vaerker" className="mt-16 scroll-mt-28">
           <h2 className="font-display text-3xl">Udvalgte værker</h2>
-          <div className="mt-8 columns-2 gap-5 md:columns-3 [&>img]:mb-5">
-            {udvalgte.map((id) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img key={id} src={wix(id, 700)} alt="Smykke af Ossip Frolov" loading="lazy" className="w-full bg-pearl-deep" />
+          <div className="mt-8 columns-2 gap-5 md:columns-3">
+            {udvalgte.map((b, i) => (
+              <div key={b.id} className="relative mb-5 break-inside-avoid">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={billedSrc(b, 700)}
+                  alt={b.titel ?? "Smykke af Ossip Frolov"}
+                  loading="lazy"
+                  className="w-full bg-pearl-deep"
+                />
+                <ElementKnapper
+                  liste="galleri.udvalgte"
+                  id={b.id}
+                  foerste={i === 0}
+                  sidste={i === udvalgte.length - 1}
+                  hvad="billedet"
+                />
+              </div>
             ))}
+          </div>
+          <div className="mt-6">
+            <TilfoejBilleder liste="galleri.udvalgte" />
           </div>
         </section>
 
         {serier.map((s) => (
-          <section key={s.id} id={s.id} className="mt-20 scroll-mt-28">
-            <h2 className="font-display text-3xl">{s.titel}</h2>
-            <p className="mt-2 max-w-2xl text-ash">{s.tekst}</p>
+          <section key={s.id} id={s.id} className="relative mt-20 scroll-mt-28">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <T id={`galleri.${s.id}.titel`} as="h2" className="block font-display text-3xl">
+                {s.titel}
+              </T>
+              <ElementKnapper
+                liste="galleri.serier"
+                id={s.id}
+                foerste={s.foerste}
+                sidste={s.sidste}
+                lodret
+                hvad="hele serien"
+                className=""
+              />
+            </div>
+            <T
+              id={`galleri.${s.id}.tekst`}
+              as="p"
+              className="mt-2 block max-w-2xl text-ash"
+              placeholder="Skriv en kort tekst om serien"
+            >
+              {s.tekst}
+            </T>
             <div className="mt-8 grid grid-cols-2 gap-5 sm:grid-cols-3">
-              {s.billeder.map((b) => (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  key={b.id}
-                  src={wix(b.id, 600)}
-                  alt={b.titel}
-                  title={b.titel}
-                  loading="lazy"
-                  className="aspect-square w-full bg-pearl-deep object-cover"
-                />
+              {s.billeder.map((b, i) => (
+                <div key={b.id} className="relative">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={billedSrc(b, 600)}
+                    alt={b.titel ?? s.titel}
+                    title={b.titel}
+                    loading="lazy"
+                    className="aspect-square w-full bg-pearl-deep object-cover"
+                  />
+                  <ElementKnapper
+                    liste={`galleri.${s.id}.billeder`}
+                    id={b.id}
+                    foerste={i === 0}
+                    sidste={i === s.billeder.length - 1}
+                    hvad="billedet"
+                  />
+                </div>
               ))}
+            </div>
+            <div className="mt-6">
+              <TilfoejBilleder liste={`galleri.${s.id}.billeder`} />
             </div>
           </section>
         ))}
+
+        <div data-only-editing="" className="mt-20 border-t border-ink/10 pt-8">
+          <HandlingsKnap handling={nySerie}>Ny serie</HandlingsKnap>
+        </div>
       </div>
     </>
   );

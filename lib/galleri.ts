@@ -59,3 +59,14 @@ export const instagram = [
   "3b4bab_46d88eef1ec84a66af5f3cfe55d97f41~mv2.jpg",
   "3b4bab_bf51728c20fd43f3afcdee4e32afe23c~mv2.jpg",
 ];
+
+// Serierne under udvalgte værker. Ossip kan flytte, fjerne og tilføje serier på /galleri.
+export const serier = [
+  { id: "sommerfugle", titel: "Sommerfugle", tekst: "Sommerfugle af 14K guld med ferskvandsperler.", billeder: sommerfugle },
+  {
+    id: "byen",
+    titel: "Byen",
+    tekst: "København med sin smukke arkitektur har været en stor inspiration: tårne, tage og den gamle by i sølv og guld.",
+    billeder: byen,
+  },
+];

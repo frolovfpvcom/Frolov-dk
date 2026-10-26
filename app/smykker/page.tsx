@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SideTop, SmykkeKort, tekstLink } from "@/components/Dele";
+import { NytSmykke } from "@/components/Redigering";
 import { T } from "@/components/Tekst";
-import { smykker, typer, type Type } from "@/lib/smykker";
+import { hentSmykker } from "@/lib/lister";
+import { typer, type Type } from "@/lib/smykker";
 
 export const metadata: Metadata = {
   title: "Smykker til salg",
@@ -23,6 +25,7 @@ const koeb = [
 
 export default async function Smykker({ searchParams }: { searchParams: Promise<{ type?: string }> }) {
   const { type } = await searchParams;
+  const smykker = await hentSmykker();
   const valgt = typer.some((t) => t.slug === type) ? (type as Type) : undefined;
   const vist = valgt ? smykker.filter((s) => s.type === valgt) : smykker;
   const filtre = [
@@ -85,8 +88,15 @@ export default async function Smykker({ searchParams }: { searchParams: Promise<
 
       <div className="mx-auto mt-10 grid max-w-6xl gap-x-8 gap-y-14 px-5 sm:grid-cols-2 sm:px-8 lg:grid-cols-3">
         {vist.map((s) => (
-          <SmykkeKort key={s.slug} smykke={s} />
+          <SmykkeKort
+            key={s.slug}
+            smykke={s}
+            flyt={valgt ? undefined : { foerste: s === smykker[0], sidste: s === smykker.at(-1) }}
+          />
         ))}
+      </div>
+      <div className="mx-auto mt-10 max-w-6xl px-5 sm:px-8">
+        <NytSmykke typer={typer} />
       </div>
 
       <p className="mx-auto mt-16 max-w-6xl px-5 text-ash sm:px-8">

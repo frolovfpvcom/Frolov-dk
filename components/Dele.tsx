@@ -3,8 +3,9 @@ import type { ReactNode } from "react";
 import { Billede, T } from "./Tekst";
 import { aftale } from "@/lib/fakta";
 import { hentIndhold } from "@/lib/indhold";
-import { erSolgt, type Smykke } from "@/lib/smykker";
-import { wix } from "@/lib/wix";
+import { ElementKnapper } from "./Redigering";
+import { billedSrc, type VistSmykke } from "@/lib/lister";
+import { erSolgt } from "@/lib/smykker";
 
 export const knapMoerk = "bg-ink px-6 py-3 text-[0.95rem] tracking-wide text-pearl hover:bg-tourmaline";
 export const knapLys = "border border-ink/25 px-6 py-3 text-[0.95rem] tracking-wide hover:border-ink";
@@ -70,26 +71,39 @@ export async function Priser({ className }: { className: string }) {
   );
 }
 
-export async function SmykkeKort({ smykke: s }: { smykke: Smykke }) {
+// Med flyt er kortet en del af listen over smykker til salg, og Ossip kan flytte og fjerne det.
+export async function SmykkeKort({
+  smykke: s,
+  flyt,
+}: {
+  smykke: VistSmykke;
+  flyt?: { foerste: boolean; sidste: boolean };
+}) {
   const { tekst } = await hentIndhold();
   const solgt = erSolgt(tekst[`smykke.${s.slug}.pris`] ?? s.pris);
-  const hover = s.billeder[1];
+  const [forrest, hover] = s.billeder;
   return (
-    <article className="group">
+    <article className="group relative">
       <Link href={`/smykker/${s.slug}`} className="block">
         <div className="relative aspect-square overflow-hidden bg-pearl-deep">
-          <Billede
-            id={`smykke.${s.slug}.billede.1`}
-            wixId={s.billeder[0].id}
-            str={900}
-            alt={s.billeder[0].alt}
-            lazy
-            className={`h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]${solgt ? " opacity-70" : ""}`}
-          />
+          {forrest ? (
+            <Billede
+              id={`smykke.${s.slug}.billede.${forrest.id}`}
+              src={billedSrc(forrest, 900)}
+              str={900}
+              alt={forrest.titel ?? s.titel}
+              lazy
+              className={`h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]${solgt ? " opacity-70" : ""}`}
+            />
+          ) : (
+            <span data-only-editing="" className="flex h-full items-center justify-center text-sm text-ash">
+              Åbn smykket for at tilføje billeder
+            </span>
+          )}
           {hover ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={wix(hover.id, 900)}
+              src={billedSrc(hover, 900)}
               alt=""
               loading="lazy"
               className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100 [html[data-editing]_&]:hidden"
@@ -113,6 +127,7 @@ export async function SmykkeKort({ smykke: s }: { smykke: Smykke }) {
             id={`smykke.${s.slug}.pris`}
             as="p"
             className={`shrink-0 text-sm tabular-nums ${solgt ? "text-ash" : "text-gold"}`}
+            placeholder="Tilføj pris"
           >
             {s.pris}
           </T>
@@ -125,10 +140,16 @@ export async function SmykkeKort({ smykke: s }: { smykke: Smykke }) {
         >
           {s.materiale}
         </T>
-        <T id={`smykke.${s.slug}.beskrivelse`} as="p" className="mt-1 text-sm text-ash">
+        <T
+          id={`smykke.${s.slug}.beskrivelse`}
+          as="p"
+          className="mt-1 text-sm text-ash"
+          placeholder="Tilføj en kort beskrivelse"
+        >
           {s.beskrivelse}
         </T>
       </Link>
+      {flyt ? <ElementKnapper liste="smykker" id={s.slug} {...flyt} hvad="smykket" /> : null}
     </article>
   );
 }

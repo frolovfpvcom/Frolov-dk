@@ -52,17 +52,20 @@ export async function T({
   );
 }
 
-// Et billede Ossip kan skifte. Standardbilledet hentes fra Wix i den ønskede størrelse.
+// Et billede Ossip kan skifte. Standardbilledet hentes fra Wix i den ønskede størrelse,
+// medmindre det er et billede han selv har uploadet (src).
 export async function Billede({
   id,
   wixId,
+  src,
   str,
   alt,
   className,
   lazy = false,
 }: {
   id: string;
-  wixId: string;
+  wixId?: string;
+  src?: string;
   str: number;
   alt: string;
   className?: string;
@@ -73,7 +76,7 @@ export async function Billede({
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src={rettet ?? wix(wixId, str)}
+      src={rettet ?? src ?? wix(wixId!, str)}
       alt={alt}
       loading={lazy ? "lazy" : undefined}
       data-edit-img={id}
@@ -83,7 +86,7 @@ export async function Billede({
   );
 }
 
-export async function billede(id: string, wixId: string, str: number) {
+export async function billede(id: string, standard: string) {
   const { billeder } = await hentIndhold();
-  return billeder[id] ?? wix(wixId, str);
+  return billeder[id] ?? standard;
 }

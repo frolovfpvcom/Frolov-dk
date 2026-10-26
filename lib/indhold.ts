@@ -7,10 +7,22 @@ import { unstable_cache } from "next/cache";
 export type Indhold = {
   tekst: Record<string, string>;
   billeder: Record<string, string>;
+  // Rækkefølgen af menuen, gallerier, smykker og egne sider (se lib/lister.ts).
+  lister: Record<string, Element[]>;
+};
+
+// Ét punkt i en liste. Hvilke felter der bruges, afhænger af listen.
+export type Element = {
+  id: string;
+  src?: string;
+  wix?: string;
+  titel?: string;
+  slags?: string;
+  skjult?: boolean;
 };
 
 const FIL = "indhold/indhold.json";
-const tomt: Indhold = { tekst: {}, billeder: {} };
+const tomt: Indhold = { tekst: {}, billeder: {}, lister: {} };
 
 export const harBlob = () => Boolean(process.env.BLOB_STORE_ID || process.env.BLOB_READ_WRITE_TOKEN);
 
@@ -26,7 +38,7 @@ async function laesStrengt(): Promise<Indhold> {
   if (!res) return tomt;
   if (res.statusCode !== 200) throw new Error(`Blob svarede ${res.statusCode}`);
   const data = (await new Response(res.stream).json()) as Partial<Indhold>;
-  return { tekst: data.tekst ?? {}, billeder: data.billeder ?? {} };
+  return { tekst: data.tekst ?? {}, billeder: data.billeder ?? {}, lister: data.lister ?? {} };
 }
 
 async function laesFraBlob(): Promise<Indhold> {
