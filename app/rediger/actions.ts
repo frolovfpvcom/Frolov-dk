@@ -182,7 +182,7 @@ export async function flytTil(navn: string, id: string, maalId: string, efter: b
   });
 }
 
-const BILLEDLISTE = /^(galleri\.udvalgte|galleri\.[a-z0-9-]+\.billeder|forside\.instagram|smykke\.[a-z0-9-]+\.billeder|side\.[a-z0-9-]+\.blokke|fri\.[a-z0-9-]+)$/;
+const BILLEDLISTE = /^(galleri\.udvalgte|galleri\.[a-z0-9-]+\.billeder|forside\.instagram|smykke\.[a-z0-9-]+\.billeder|side\.[a-z0-9-]+\.blokke|fri\.[a-z0-9-]+|vaerk\.[a-z0-9]+\.billeder)$/;
 const BLOKLISTE = /^(side\.[a-z0-9-]+\.blokke|fri\.[a-z0-9-]+)$/;
 
 // Ét billede ad gangen, så hvert upload holder sig under grænsen for en server action.

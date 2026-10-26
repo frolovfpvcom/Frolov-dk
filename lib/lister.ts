@@ -29,6 +29,8 @@ const standarder: [RegExp, (m: RegExpMatchArray) => Element[]][] = [
   ],
   [/^side\.([a-z0-9-]+)\.blokke$/, () => []],
   [/^fri\.([a-z0-9-]+)$/, () => []],
+  // Ekstra billeder på siden for et smykke fra en billedstribe (app/vaerk).
+  [/^vaerk\.([a-z0-9]+)\.billeder$/, () => []],
 ];
 
 export function standardListe(navn: string): Element[] | undefined {
