@@ -1,5 +1,3 @@
-import { wix } from "./wix";
-
 export type Type = "ringe" | "oereringe";
 
 export type Smykke = {
@@ -141,16 +139,6 @@ export const smykker: Smykke[] = [
   },
 ];
 
-export function findSmykke(slug: string) {
-  return smykker.find((s) => s.slug === slug);
-}
-
-// De næste tre smykker efter dette, rundt i ring.
-export function andreSmykker(slug: string, antal = 3) {
-  const i = smykker.findIndex((s) => s.slug === slug);
-  return Array.from({ length: antal }, (_, n) => smykker[(i + 1 + n) % smykker.length]);
-}
-
 export function erSolgt(pris: string) {
   return pris.trim().toLowerCase() === "solgt";
 }
@@ -159,8 +147,4 @@ export function erSolgt(pris: string) {
 export function prisTal(pris: string) {
   const tal = pris.match(/\d[\d.]*/)?.[0];
   return tal ? Number(tal.replace(/\./g, "")) : undefined;
-}
-
-export function smykkeBillede(s: Smykke, str: number, nr = 0) {
-  return wix(s.billeder[nr].id, str);
 }

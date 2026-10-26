@@ -3,6 +3,7 @@ import { Bodoni_Moda, Hanken_Grotesk } from "next/font/google";
 import "./globals.css";
 import { EditMode } from "@/components/EditMode";
 import { Footer, Header, TopLinje } from "@/components/Ramme";
+import { hentMenu } from "@/lib/lister";
 import { site } from "@/lib/site";
 import { wix } from "@/lib/wix";
 
@@ -47,7 +48,7 @@ const jsonLd = {
   sameAs: [site.instagram, site.facebook],
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="da" className={`${bodoni.variable} ${hanken.variable} antialiased`}>
       <body className="flex min-h-dvh flex-col font-sans">
@@ -56,7 +57,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
-        <EditMode />
+        <EditMode menu={await hentMenu()} />
       </body>
     </html>
   );

@@ -2,19 +2,26 @@ import Link from "next/link";
 import { Aftale, knapLys, knapMoerk, Priser, SmykkeKort, trin } from "@/components/Dele";
 import { Billede, T } from "@/components/Tekst";
 import { hentIndhold } from "@/lib/indhold";
-import { instagram, udvalgte } from "@/lib/galleri";
+import { udvalgte as faste } from "@/lib/galleri";
+import { billedSrc, hentListe, hentSmykker } from "@/lib/lister";
 import { bestillingBillede, kunstnerAfsnit, kunstnerOverskrift, portraet } from "@/lib/kunstneren";
 import { site } from "@/lib/site";
-import { smykker } from "@/lib/smykker";
 import { wix } from "@/lib/wix";
+import { ElementKnapper, TilfoejBilleder } from "@/components/Redigering";
 import { workshops } from "@/lib/workshops";
 
 const ANTAL_KUNDER = 6;
+const forsideBillede = faste[0];
 
 export default async function Forside() {
   const { tekst } = await hentIndhold();
   const kunder = Array.from({ length: ANTAL_KUNDER }, (_, i) => i + 1);
   const harKunde = (n: number) => Boolean(tekst[`kunder.${n}.citat`]);
+  const [udvalgte, instagram, smykker] = await Promise.all([
+    hentListe("galleri.udvalgte"),
+    hentListe("forside.instagram"),
+    hentSmykker(),
+  ]);
 
   return (
     <>
@@ -44,7 +51,7 @@ export default async function Forside() {
         <div className="relative">
           <Billede
             id="forside.billede"
-            wixId={udvalgte[0]}
+            wixId={forsideBillede}
             str={1200}
             alt="Unikt smykke af Ossip Frolov"
             className="aspect-[4/5] w-full object-cover"
@@ -61,12 +68,12 @@ export default async function Forside() {
 
       <section aria-label="Udvalgte smykker" className="overflow-x-auto py-6">
         <ul className="flex w-max gap-3 px-5 sm:px-8">
-          {udvalgte.slice(0, 10).map((id) => (
-            <li key={id} className="h-44 w-44 shrink-0 overflow-hidden bg-pearl-deep sm:h-56 sm:w-56">
+          {udvalgte.slice(0, 10).map((b) => (
+            <li key={b.id} className="h-44 w-44 shrink-0 overflow-hidden bg-pearl-deep sm:h-56 sm:w-56">
               <Link href="/galleri" aria-label="Se flere smykker i galleriet">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={wix(id, 500)}
+                  src={billedSrc(b, 500)}
                   alt=""
                   loading="lazy"
                   className="h-full w-full object-cover transition-transform duration-700 hover:scale-[1.04]"
@@ -245,20 +252,30 @@ export default async function Forside() {
           </Link>
         </div>
         <ul className="mt-8 grid grid-cols-2 gap-5 sm:grid-cols-3">
-          {instagram.map((id) => (
-            <li key={id} className="aspect-square overflow-hidden bg-pearl-deep">
+          {instagram.map((b, i) => (
+            <li key={b.id} className="relative aspect-square overflow-hidden bg-pearl-deep">
               <a href={site.instagram} aria-label="Se værkstedet på Instagram">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={wix(id, 600)}
+                  src={billedSrc(b, 600)}
                   alt=""
                   loading="lazy"
                   className="h-full w-full object-cover transition-transform duration-700 hover:scale-[1.04]"
                 />
               </a>
+              <ElementKnapper
+                liste="forside.instagram"
+                id={b.id}
+                foerste={i === 0}
+                sidste={i === instagram.length - 1}
+                hvad="billedet"
+              />
             </li>
           ))}
         </ul>
+        <div className="mt-6">
+          <TilfoejBilleder liste="forside.instagram" />
+        </div>
         <a href={site.instagram} className={`mt-8 inline-block ${knapLys}`}>
           {site.instagramNavn} på Instagram
         </a>

@@ -4,6 +4,9 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExter
 import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { logout, resetField, saveImage, saveText } from "@/app/rediger/actions";
+import type { MenuPunkt } from "@/lib/lister";
+import { formindsk } from "./formindsk";
+import { MenuPanel } from "./MenuPanel";
 
 type Maal =
   | { kind: "text"; id: string; el: HTMLElement; raw: string; edited: boolean }
@@ -30,7 +33,7 @@ const knap = "px-3 py-1.5 hover:bg-pearl/10 disabled:opacity-50";
 
 const ingenAbonnement = () => () => {};
 
-export function EditMode() {
+export function EditMode({ menu }: { menu: MenuPunkt[] }) {
   usePathname();
   const aktiv = useSyncExternalStore(
     ingenAbonnement,
@@ -39,6 +42,7 @@ export function EditMode() {
   );
   const [maal, setMaal] = useState<Maal | null>(null);
   const [besked, setBesked] = useState<string | null>(null);
+  const [panel, setPanel] = useState(false);
 
   useEffect(() => {
     if (!aktiv) return;
@@ -85,12 +89,22 @@ export function EditMode() {
     <>
       {maal?.kind === "text" ? <TekstFelt key={maal.id} maal={maal} onDone={faerdig} /> : null}
       {maal?.kind === "image" ? <BilledValg key={maal.id} maal={maal} onDone={faerdig} /> : null}
+      {panel ? <MenuPanel menu={menu} onClose={() => setPanel(false)} /> : null}
       <div className="fixed inset-x-0 bottom-0 z-50 border-t border-gold/40 bg-oxide/95 text-pearl backdrop-blur">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-5 py-3 text-sm sm:px-8">
           <p className="font-medium text-gold-soft">Redigering</p>
           <p className="flex-1 text-pearl/80" role="status">
-            {besked ?? "Dobbeltklik på en tekst eller et billede for at ændre det. Skriv *ord* for kursiv."}
+            {besked ??
+              "Dobbeltklik på en tekst eller et billede for at ændre det. Brug pilene og + for at flytte og tilføje."}
           </p>
+          <button
+            type="button"
+            onClick={() => setPanel((p) => !p)}
+            aria-expanded={panel}
+            className="border border-gold-soft/60 px-3 py-1.5 text-gold-soft hover:bg-gold-soft hover:text-oxide"
+          >
+            Sider og menu
+          </button>
           <form
             action={async () => {
               await logout();
@@ -290,22 +304,4 @@ function BilledValg({
       ) : null}
     </Vaerktoejslinje>
   );
-}
-
-// Store billeder fra telefonen skaleres ned i browseren før upload.
-async function formindsk(fil: File, maks = 2400) {
-  try {
-    const bmp = await createImageBitmap(fil);
-    const skala = Math.min(1, maks / Math.max(bmp.width, bmp.height));
-    if (skala === 1 && fil.size < 1_500_000) return fil;
-    const canvas = document.createElement("canvas");
-    canvas.width = Math.round(bmp.width * skala);
-    canvas.height = Math.round(bmp.height * skala);
-    canvas.getContext("2d")!.drawImage(bmp, 0, 0, canvas.width, canvas.height);
-    const blob = await new Promise<Blob | null>((ok) => canvas.toBlob(ok, "image/jpeg", 0.86));
-    if (!blob) return fil;
-    return new File([blob], fil.name.replace(/\.\w+$/, "") + ".jpg", { type: "image/jpeg" });
-  } catch {
-    return fil;
-  }
 }
