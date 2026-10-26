@@ -7,7 +7,8 @@ import { billedSrc, flytbar, hentListe, skiftbart, slipBilleder } from "@/lib/li
 // Overskrifter, tekst og billeder i den rækkefølge Ossip har sat dem.
 // Bruges på hans egne sider og i de felter han kan fylde ud på de faste sider (<Fri>).
 
-// Billeder der står lige efter hinanden, vises som en række.
+// Billeder der står lige efter hinanden, vises som én stribe. Er der ikke plads til dem
+// alle (fx på en telefon), kan man rulle striben til siden.
 function grupper(blokke: Element[]) {
   const grupper: Element[][] = [];
   for (const b of blokke) {
@@ -17,8 +18,6 @@ function grupper(blokke: Element[]) {
   }
   return grupper;
 }
-
-const kolonner = ["", "", "grid-cols-2", "grid-cols-2 sm:grid-cols-3", "grid-cols-2 md:grid-cols-4"];
 
 export async function Blokke({ liste, tekstId }: { liste: string; tekstId: (id: string) => string }) {
   const blokke = await hentListe(liste);
@@ -37,12 +36,13 @@ export async function Blokke({ liste, tekstId }: { liste: string; tekstId: (id: 
     <div className="space-y-8" {...slipBilleder(liste)}>
       {grupper(blokke).map((gruppe) =>
         gruppe[0].slags === "billede" ? (
-          <div
-            key={gruppe[0].id}
-            className={gruppe.length > 1 ? `grid gap-4 ${kolonner[Math.min(gruppe.length, 4)]}` : ""}
-          >
+          <div key={gruppe[0].id} className={gruppe.length > 1 ? "flex gap-3 overflow-x-auto" : ""}>
             {gruppe.map((b) => (
-              <div key={b.id} className="relative" {...flytbar(liste, b.id)}>
+              <div
+                key={b.id}
+                className={gruppe.length > 1 ? "relative min-w-36 flex-1 basis-0" : "relative"}
+                {...flytbar(liste, b.id)}
+              >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   {...skiftbart(liste, b)}
