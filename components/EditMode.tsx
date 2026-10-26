@@ -285,7 +285,9 @@ function BilledValg({
           if (!fil) return;
           start(async () => {
             const form = new FormData();
-            form.set("billede", await formindsk(fil));
+            // Det nye billede skæres til, så det fylder samme ramme som det gamle.
+            const forhold = el.clientHeight ? el.clientWidth / el.clientHeight : undefined;
+            form.set("billede", await formindsk(fil, 2400, forhold));
             const svar = liste ? await erstatBillede(liste, id, form) : await saveImage(id, form);
             if (svar.ok) onDone("Billedet er skiftet.");
             else setFejl(svar.error);

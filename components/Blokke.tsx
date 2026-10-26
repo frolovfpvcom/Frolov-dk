@@ -49,7 +49,7 @@ export async function Blokke({ liste, tekstId }: { liste: string; tekstId: (id: 
                   src={billedSrc(b, gruppe.length > 2 ? 900 : 1400)}
                   alt={b.titel ?? ""}
                   loading="lazy"
-                  className={`w-full bg-pearl-deep${gruppe.length > 1 ? " aspect-square object-cover" : ""}`}
+                  className={`w-full bg-pearl-deep object-cover ${gruppe.length > 1 ? "aspect-square" : "aspect-[3/2]"}`}
                 />
                 {knapper(b)}
               </div>
