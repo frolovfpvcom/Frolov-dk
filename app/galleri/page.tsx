@@ -5,7 +5,8 @@ import { SideTop, tekstLink } from "@/components/Dele";
 import { ElementKnapper, HandlingsKnap, TilfoejBilleder } from "@/components/Redigering";
 import { T, tekst } from "@/components/Tekst";
 import { serier as faste } from "@/lib/galleri";
-import { billedSrc, hentListe } from "@/lib/lister";
+import { billedSrc, flytbar, hentListe, skiftbart, slipBilleder } from "@/lib/lister";
+import { Fri } from "@/components/Blokke";
 
 export const metadata: Metadata = {
   title: "Gallerier",
@@ -38,6 +39,7 @@ export default async function Galleri() {
         Et udvalg af smykker skabt sammen med dem der skal bære dem. Brug billederne som inspiration til dit eget
         smykke.
       </SideTop>
+      <Fri sted="galleri-top" />
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <nav aria-label="Spring til">
           <ul className="flex flex-wrap gap-2">
@@ -79,13 +81,14 @@ export default async function Galleri() {
           </p>
         </div>
 
-        <section id="udvalgte-vaerker" className="mt-16 scroll-mt-28">
+        <section id="udvalgte-vaerker" className="mt-16 scroll-mt-28" {...slipBilleder("galleri.udvalgte")}>
           <h2 className="font-display text-3xl">Udvalgte værker</h2>
           <div className="mt-8 columns-2 gap-5 md:columns-3">
             {udvalgte.map((b, i) => (
-              <div key={b.id} className="relative mb-5 break-inside-avoid">
+              <div key={b.id} className="relative mb-5 break-inside-avoid" {...flytbar("galleri.udvalgte", b.id)}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
+                  {...skiftbart("galleri.udvalgte", b)}
                   src={billedSrc(b, 700)}
                   alt={b.titel ?? "Smykke af Ossip Frolov"}
                   loading="lazy"
@@ -107,7 +110,13 @@ export default async function Galleri() {
         </section>
 
         {serier.map((s) => (
-          <section key={s.id} id={s.id} className="relative mt-20 scroll-mt-28">
+          <section
+            key={s.id}
+            id={s.id}
+            className="relative mt-20 scroll-mt-28"
+            {...flytbar("galleri.serier", s.id, true)}
+            {...slipBilleder(`galleri.${s.id}.billeder`)}
+          >
             <div className="flex flex-wrap items-start justify-between gap-4">
               <T id={`galleri.${s.id}.titel`} as="h2" className="block font-display text-3xl">
                 {s.titel}
@@ -132,9 +141,10 @@ export default async function Galleri() {
             </T>
             <div className="mt-8 grid grid-cols-2 gap-5 sm:grid-cols-3">
               {s.billeder.map((b, i) => (
-                <div key={b.id} className="relative">
+                <div key={b.id} className="relative" {...flytbar(`galleri.${s.id}.billeder`, b.id)}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
+                    {...skiftbart(`galleri.${s.id}.billeder`, b)}
                     src={billedSrc(b, 600)}
                     alt={b.titel ?? s.titel}
                     title={b.titel}
@@ -161,6 +171,7 @@ export default async function Galleri() {
           <HandlingsKnap handling={nySerie}>Ny serie</HandlingsKnap>
         </div>
       </div>
+      <Fri sted="galleri-bund" className="mx-auto max-w-6xl px-5 pt-16 sm:px-8" />
     </>
   );
 }

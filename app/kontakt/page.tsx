@@ -4,6 +4,7 @@ import { SideTop } from "@/components/Dele";
 import { T } from "@/components/Tekst";
 import { site } from "@/lib/site";
 import { ContactForm } from "./ContactForm";
+import { Fri } from "@/components/Blokke";
 
 export const metadata: Metadata = {
   title: "Kontakt",
@@ -29,6 +30,7 @@ export default async function Kontakt({ searchParams }: { searchParams: Promise<
           herunder, så vender jeg tilbage hurtigst muligt.
         </T>
       </SideTop>
+      <Fri sted="kontakt-top" />
       <div className="mx-auto grid max-w-6xl gap-14 px-5 sm:px-8 md:grid-cols-2">
         <dl className="space-y-8">
           <Punkt navn="Telefon">
@@ -62,6 +64,7 @@ export default async function Kontakt({ searchParams }: { searchParams: Promise<
         </dl>
         <ContactForm email={site.email} piece={smykke} />
       </div>
+      <Fri sted="kontakt-bund" className="mx-auto max-w-6xl px-5 pt-16 sm:px-8" />
     </>
   );
 }

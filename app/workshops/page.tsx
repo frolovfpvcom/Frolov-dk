@@ -4,6 +4,7 @@ import { knapLys, knapMoerk, SideTop } from "@/components/Dele";
 import { Billede, T } from "@/components/Tekst";
 import { kontaktLink, site } from "@/lib/site";
 import { workshops } from "@/lib/workshops";
+import { Fri } from "@/components/Blokke";
 
 export const metadata: Metadata = {
   title: "Workshops",
@@ -18,6 +19,7 @@ export default function Workshops() {
           {`Værkstedet er også et sted, hvor man kan lave noget sammen. Ring på ${site.telefon} for at høre mere eller melde dig til.`}
         </T>
       </SideTop>
+      <Fri sted="workshops-top" />
       <div className="mx-auto grid max-w-6xl gap-16 px-5 sm:px-8">
         {workshops.map((w, i) => (
           <article key={w.slug} id={w.slug} className="grid scroll-mt-28 items-center gap-10 md:grid-cols-2">
@@ -62,6 +64,7 @@ export default function Workshops() {
           </article>
         ))}
       </div>
+      <Fri sted="workshops-bund" className="mx-auto max-w-6xl px-5 pt-16 sm:px-8" />
     </>
   );
 }

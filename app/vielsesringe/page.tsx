@@ -5,6 +5,7 @@ import { Billede, T } from "@/components/Tekst";
 import { faq } from "@/lib/faq";
 import { bestillingBillede } from "@/lib/kunstneren";
 import { kontaktLink } from "@/lib/site";
+import { Fri } from "@/components/Blokke";
 
 export const metadata: Metadata = {
   title: "Vielsesringe",
@@ -21,6 +22,7 @@ export default function Vielsesringe() {
           og finder frem til ringe, der passer til jer og jeres liv.
         </T>
       </SideTop>
+      <Fri sted="vielsesringe-top" />
 
       <div className="mx-auto grid max-w-6xl gap-12 px-5 sm:px-8 md:grid-cols-[1fr_1.2fr]">
         <Billede
@@ -72,6 +74,7 @@ export default function Vielsesringe() {
           .
         </p>
       </section>
+      <Fri sted="vielsesringe-bund" className="mx-auto max-w-6xl px-5 pt-16 sm:px-8" />
     </>
   );
 }

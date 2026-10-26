@@ -3,14 +3,22 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, useTransition } from "react";
 import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import { logout, resetField, saveImage, saveText } from "@/app/rediger/actions";
+import {
+  erstatBillede,
+  gendanBillede,
+  logout,
+  resetField,
+  saveImage,
+  saveText,
+} from "@/app/rediger/actions";
 import type { MenuPunkt } from "@/lib/lister";
 import { formindsk } from "./formindsk";
 import { MenuPanel } from "./MenuPanel";
+import { useTraek } from "./Traek";
 
 type Maal =
   | { kind: "text"; id: string; el: HTMLElement; raw: string; edited: boolean }
-  | { kind: "image"; id: string; el: HTMLElement; edited: boolean };
+  | { kind: "image"; id: string; liste?: string; el: HTMLElement; edited: boolean };
 
 // Feltet lægges præcis oven på teksten, med samme skrift og farver.
 const KOPIER = [
@@ -43,6 +51,7 @@ export function EditMode({ menu }: { menu: MenuPunkt[] }) {
   const [maal, setMaal] = useState<Maal | null>(null);
   const [besked, setBesked] = useState<string | null>(null);
   const [panel, setPanel] = useState(false);
+  useTraek(aktiv, setBesked);
 
   useEffect(() => {
     if (!aktiv) return;
@@ -66,7 +75,8 @@ export function EditMode({ menu }: { menu: MenuPunkt[] }) {
       e.preventDefault();
       window.getSelection()?.removeAllRanges();
       const edited = el.dataset.edited !== undefined;
-      if (el.dataset.editImg) setMaal({ kind: "image", id: el.dataset.editImg, el, edited });
+      if (el.dataset.editImg)
+        setMaal({ kind: "image", id: el.dataset.editImg, liste: el.dataset.editListe, el, edited });
       else setMaal({ kind: "text", id: el.dataset.edit!, el, raw: el.dataset.raw ?? el.innerText, edited });
       setBesked(null);
     };
@@ -95,7 +105,7 @@ export function EditMode({ menu }: { menu: MenuPunkt[] }) {
           <p className="font-medium text-gold-soft">Redigering</p>
           <p className="flex-1 text-pearl/80" role="status">
             {besked ??
-              "Dobbeltklik på en tekst eller et billede for at ændre det. Brug pilene og + for at flytte og tilføje."}
+              "Dobbeltklik på en tekst eller et billede for at ændre det. Træk billeder og smykker for at flytte dem."}
           </p>
           <button
             type="button"
@@ -244,7 +254,7 @@ function BilledValg({
   maal: Extract<Maal, { kind: "image" }>;
   onDone: (besked?: string) => void;
 }) {
-  const { el, id } = maal;
+  const { el, id, liste } = maal;
   const rect = usePlacering(el);
   const ref = useRef<HTMLInputElement>(null);
   const [fejl, setFejl] = useState<string | null>(null);
@@ -257,7 +267,7 @@ function BilledValg({
 
   function gendan() {
     start(async () => {
-      const svar = await resetField(id);
+      const svar = liste ? await gendanBillede(liste, id) : await resetField(id);
       if (svar.ok) onDone("Det oprindelige billede er sat tilbage.");
       else setFejl(svar.error);
     });
@@ -276,7 +286,7 @@ function BilledValg({
           start(async () => {
             const form = new FormData();
             form.set("billede", await formindsk(fil));
-            const svar = await saveImage(id, form);
+            const svar = liste ? await erstatBillede(liste, id, form) : await saveImage(id, form);
             if (svar.ok) onDone("Billedet er skiftet.");
             else setFejl(svar.error);
           });

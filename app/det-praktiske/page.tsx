@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { SideTop } from "@/components/Dele";
 import { T } from "@/components/Tekst";
 import { faq, pleje } from "@/lib/faq";
+import { Fri } from "@/components/Blokke";
 
 export const metadata: Metadata = {
   title: "Det praktiske",
@@ -12,6 +13,7 @@ export default function DetPraktiske() {
   return (
     <>
       <SideTop lille="Det praktiske" titel="Sådan foregår det" />
+      <Fri sted="det-praktiske-top" />
       <div className="mx-auto max-w-3xl px-5 sm:px-8">
         {faq.map((f, i) => (
           <details key={f.spoergsmaal} className="group border-t border-ink/15 py-6 last:border-b" open={i === 0}>
@@ -43,6 +45,7 @@ export default function DetPraktiske() {
           </dl>
         </section>
       </div>
+      <Fri sted="det-praktiske-bund" className="mx-auto max-w-6xl px-5 pt-16 sm:px-8" />
     </>
   );
 }

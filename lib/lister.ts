@@ -28,6 +28,7 @@ const standarder: [RegExp, (m: RegExpMatchArray) => Element[]][] = [
       })),
   ],
   [/^side\.([a-z0-9-]+)\.blokke$/, () => []],
+  [/^fri\.([a-z0-9-]+)$/, () => []],
 ];
 
 export function standardListe(navn: string): Element[] | undefined {
@@ -116,4 +117,20 @@ export function andreSmykker(alle: VistSmykke[], slug: string, antal = 3) {
   const i = alle.findIndex((s) => s.slug === slug);
   const n = Math.min(antal, alle.length - 1);
   return Array.from({ length: Math.max(n, 0) }, (_, k) => alle[(i + 1 + k) % alle.length]);
+}
+
+// Et punkt Ossip kan trække et nyt sted hen i listen (se components/Traek.tsx).
+export function flytbar(liste: string, id: string, lodret = false) {
+  return { "data-liste": liste, "data-element": id, "data-lodret": lodret ? "" : undefined };
+}
+
+// Et billede i en liste, som Ossip kan dobbeltklikke på og skifte ud.
+// "Gendan original" findes kun for billeder der oprindeligt kom fra Wix.
+export function skiftbart(liste: string, e: Element) {
+  return { "data-edit-img": e.id, "data-edit-liste": liste, "data-edited": e.src && e.wix ? "" : undefined };
+}
+
+// Et område Ossip kan trække billeder ind i fra computeren.
+export function slipBilleder(liste: string) {
+  return { "data-slip-billeder": liste };
 }

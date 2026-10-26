@@ -5,6 +5,7 @@ import { NytSmykke } from "@/components/Redigering";
 import { T } from "@/components/Tekst";
 import { hentSmykker } from "@/lib/lister";
 import { typer, type Type } from "@/lib/smykker";
+import { Fri } from "@/components/Blokke";
 
 export const metadata: Metadata = {
   title: "Smykker til salg",
@@ -47,6 +48,7 @@ export default async function Smykker({ searchParams }: { searchParams: Promise<
           gerne noget lignende til dig.
         </T>
       </SideTop>
+      <Fri sted="smykker-top" />
 
       <section id="saadan-koeber-du" aria-label="Sådan køber du" className="scroll-mt-28 bg-pearl-deep">
         <ol className="mx-auto grid max-w-6xl gap-8 px-5 py-10 sm:px-8 md:grid-cols-3">
@@ -110,6 +112,7 @@ export default async function Smykker({ searchParams }: { searchParams: Promise<
         </Link>
         .
       </p>
+      <Fri sted="smykker-bund" className="mx-auto max-w-6xl px-5 pt-16 sm:px-8" />
     </>
   );
 }

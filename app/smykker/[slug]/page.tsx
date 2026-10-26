@@ -5,7 +5,7 @@ import { Aftale, knapLys, knapMoerk, SmykkeKort, tekstLink } from "@/components/
 import { ElementKnapper, TilfoejBilleder } from "@/components/Redigering";
 import { Billede, billede, T, tekst } from "@/components/Tekst";
 import { fakta } from "@/lib/fakta";
-import { andreSmykker, billedSrc, findSmykke, hentSmykker } from "@/lib/lister";
+import { andreSmykker, billedSrc, findSmykke, flytbar, hentSmykker, slipBilleder } from "@/lib/lister";
 import { kontaktLink, site } from "@/lib/site";
 import { erSolgt, prisTal, smykker, typer } from "@/lib/smykker";
 
@@ -74,11 +74,12 @@ export default async function SmykkeSide({ params }: Props) {
       </nav>
 
       <article className="mx-auto mt-8 grid max-w-6xl gap-10 px-5 sm:px-8 md:grid-cols-[1.2fr_1fr] md:gap-14">
-        <div>
+        <div {...slipBilleder(`${k}.billeder`)}>
           <div className="grid grid-cols-2 gap-3">
             {s.billeder.map((b, i) => (
               <div
                 key={b.id}
+                {...flytbar(`${k}.billeder`, b.id)}
                 className={`relative${i === 0 ? " col-span-2" : ""}${
                   i > 0 && i === s.billeder.length - 1 && i % 2 ? " col-span-2" : ""
                 }`}
