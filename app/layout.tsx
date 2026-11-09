@@ -41,7 +41,7 @@ const jsonLd = {
   "@type": "JewelryStore",
   name: "Ossip Frolov · Guldsmed",
   url: site.url,
-  image: wix("3b4bab_84e18caf6adf4b5797dc9ace606ffabb~mv2.jpg", 1200),
+  image: new URL(wix("3b4bab_84e18caf6adf4b5797dc9ace606ffabb~mv2.jpg", 1200), site.url).href,
   telephone: site.telefonIntl,
   email: site.email,
   paymentAccepted: "MobilePay, kort, kontant, bankoverførsel",
